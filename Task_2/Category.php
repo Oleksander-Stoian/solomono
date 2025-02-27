@@ -39,13 +39,13 @@ class Category {
         return $tree;
     }
     
-    // Робимо метод частиною класу
+    
     private function simplifyTree(&$tree) {
         foreach ($tree as $key => &$value) {
             if (empty($value)) {
-                $value = $key; // Замінюємо порожні масиви на ID
+                $value = $key; 
             } else {
-                $this->simplifyTree($value); // Рекурсія для вкладених елементів
+                $this->simplifyTree($value); 
             }
         }
     }
@@ -53,7 +53,7 @@ class Category {
     public function getCategoryTree() {
         $categories = $this->getAllCategories();
         $tree = $this->buildTree($categories);
-        $this->simplifyTree($tree); // Викликаємо метод для очищення порожніх масивів
+        $this->simplifyTree($tree); 
         return $tree;
     }
 }

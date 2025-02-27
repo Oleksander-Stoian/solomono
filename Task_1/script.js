@@ -55,14 +55,14 @@ $(document).ready(function() {
 $(document).on("click", ".buy", function() {
     let productId = $(this).data("id");
     
-    console.log("Клік по кнопці 'Купити', ID товару:", productId); // Відстежуємо клік
+    console.log("Клік по кнопці 'Купити', ID товару:", productId); 
 
     $.ajax({
         url: "get_product.php",
         type: "GET",
         data: { id: productId },
         success: function(data) {
-            console.log("Отримані дані від сервера:", data); // Відстежуємо отримані дані
+            console.log("Отримані дані від сервера:", data); 
 
             let product = JSON.parse(data);
             $("#modal-product-name").text(product.name);
