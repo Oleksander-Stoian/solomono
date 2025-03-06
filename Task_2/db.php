@@ -1,7 +1,7 @@
 <?php
 class Database {
     private $host = 'localhost';
-    private $db_name = 'solomono_2';  // Ваша база даних
+    private $db_name = 'solomono_2';  
     private $username = 'root';
     private $password = '';
     public $conn;

@@ -1,24 +1,59 @@
 <?php
-require_once 'Category.php';
+require_once 'db.php';
 
+class CategoryTree {
+    private $conn;
+    
 
-$start_time = microtime(true);
+    public function __construct() {
+        $db = new Database();
+        $this->conn = $db->getConnection();
+    }
+	
+	// Метод для отримання підключення до БД (для index.php)
+    public function getConnection() {
+        return $this->conn;
+    }
+	
+     public function buildTree() {
+        // 🔹 Виконуємо SQL-запит (без кешування)
+        $query = "SELECT categories_id AS id, parent_id FROM categories ORDER BY parent_id, categories_id";
+        $stmt = $this->conn->prepare($query);
 
-$category = new Category();
-$tree = $category->getCategoryTree();
+        if (!$stmt->execute()) {
+            return ["error" => "Database query failed"];
+        }
 
+        $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-$execution_time = microtime(true) - $start_time;
+        if (!$categories) {
+            return ["error" => "No categories found in the database"];
+        }
 
+        $tree = [];
+        $references = [];
 
-header("Cache-Control: no-cache, no-store, must-revalidate"); 
-header("Pragma: no-cache"); 
-header("Expires: 0");
+        // 🔹 Один цикл для заповнення всіх категорій та їхнього зв’язку з батьківськими
+        foreach ($categories as $category) {
+            $references[$category['id']] = $references[$category['id']] ?? []; // Ініціалізація
+            if (!is_null($category['parent_id']) && $category['parent_id'] != 0) {
+                $references[$category['parent_id']][$category['id']] = &$references[$category['id']];
+            } else {
+                $tree[$category['id']] = &$references[$category['id']]; // Це кореневий елемент
+            }
+        }
 
+        // 🔹 Заповнюємо кінцеві вузли їхніми ж ID (без рекурсії)
+        foreach ($references as $id => &$subcategories) {
+            if (empty($subcategories)) {
+                $subcategories = $id;
+            }
+        }
 
-echo "<!-- Час виконання скрипта: " . round($execution_time, 4) . " сек. -->";
+        return $tree;
+    }
 
-
-header('Content-Type: application/json');
-echo json_encode($tree, JSON_PRETTY_PRINT);
-?>
+    public function getTree() {
+        return $this->buildTree();
+    }
+}

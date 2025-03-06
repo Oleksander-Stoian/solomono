@@ -1,21 +1,16 @@
 <?php
+require_once 'db.php';
 require_once 'Product.php';
 
+header('Content-Type: application/json');
 
-$product = new Product();
-$category = isset($_GET['category']) ? ($_GET['category'] !== 'all' ? intval($_GET['category']) : null) : null;
-$sort = $_GET['sort'] ?? 'date_desc';
+$category = isset($_GET['category']) ? $_GET['category'] : null;
+$sort = isset($_GET['sort']) ? $_GET['sort'] : 'date_desc';
 
-$products = $product->getProducts($category, $sort);
+$productInstance = new Product();
+$products = $productInstance->getProducts($category, $sort);
 
-$output = "<ul id='product-list'>";
-foreach ($products as $p) {
-    $output .= "<li>
-                    {$p['name']} - {$p['price']} грн
-                    <button class='buy' data-id='{$p['id']}'>Купити</button>
-                </li>";
-}
-$output .= "</ul>";
+echo json_encode($products);
+exit;
 
-echo $output;
 ?>

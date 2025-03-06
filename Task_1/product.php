@@ -9,7 +9,7 @@ class Product {
         $this->conn = $db->getConnection();
     }
 
-    public function getProducts($category = null, $sort = 'price_asc') {
+    public function getProducts($category = null, $sort = 'date_desc') {
         $sortQuery = "ORDER BY ";
         switch ($sort) {
             case 'name_asc':
@@ -44,4 +44,5 @@ class Product {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 }
+
 ?>
